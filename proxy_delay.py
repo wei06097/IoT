@@ -14,7 +14,7 @@ c.bind((proxy_host, proxy_port))
 def delay_func(recv_data, flag):
     time.sleep(0.5)
     c.sendto(recv_data, (client_host, client_port))
-    print(f"*** Packet {format(flag,'3d')} Released ***")
+    print(f"*** Packet {flag:3d} Released ***")
 
 N = 100
 while True:
@@ -27,7 +27,7 @@ while True:
 
         pick = random.random()
         if pick <= 0.05:
-            print(f"*** Packet {format(flag,'3d')} Delayed ***")
+            print(f"*** Packet {flag:3d} Delayed ***")
             thread_ = threading.Thread(target=delay_func, args=(recv_data, flag))
             thread_.start()
             count += 1

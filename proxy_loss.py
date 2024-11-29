@@ -22,7 +22,7 @@ while True:
 
         pick = random.random()
         if pick <= 0.1:
-            print(f"*** Packet {format(flag,'3d')} Loss ***")
+            print(f"*** Packet {flag:3d} Loss ***")
             count += 1
         else:
             c.sendto(recv_data, (client_host, client_port))

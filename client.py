@@ -19,11 +19,8 @@ while True:
         message_from_send = recv_data.decode("utf-8")
         temp = message_from_send.split()
 
-        trans_time = float(temp[6])
-        packet_delay = recv_time - trans_time
-
-        print(f"message_from_send | Packet delay = {format(packet_delay,"1.5f")} sec")
-        print(recv_data)
+        flag = int(temp[1])
+        print(f"Packet {flag:3d} received")
     
     except socket.timeout:
         print(f"*** Timeout while no input packet for {time_out_time} sec***")

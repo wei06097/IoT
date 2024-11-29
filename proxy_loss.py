@@ -2,6 +2,7 @@ import socket, random, os
 from dotenv import load_dotenv
 
 load_dotenv()
+N = int(os.getenv("N"))
 proxy_host = os.getenv("proxy_loss_host")
 proxy_port = int(os.getenv("proxy_loss_port"))
 client_host = os.getenv("client_host")
@@ -11,7 +12,6 @@ count = 0
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 c.bind((proxy_host, proxy_port))
 
-N = 100
 while True:
     recv_data, server_address = c.recvfrom(65535)
     message_from_send = recv_data.decode("utf-8")
@@ -28,4 +28,5 @@ while True:
     
     if flag == N:
         print(f"loss rate = {count/N*100}%")
-        break
+        print(f"==============================")
+    

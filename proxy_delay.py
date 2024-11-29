@@ -18,27 +18,21 @@ def delay_func(recv_data, flag):
 
 N = 100
 while True:
-    try:
-        recv_data, server_address = c.recvfrom(65535)
-        message_from_send = recv_data.decode("utf-8")
+    recv_data, server_address = c.recvfrom(65535)
+    message_from_send = recv_data.decode("utf-8")
 
-        temp = message_from_send.split()
-        flag = int(temp[1])
+    temp = message_from_send.split()
+    flag = int(temp[1])
 
-        pick = random.random()
-        if pick <= 0.05:
-            print(f"*** Packet {flag:3d} Delayed ***")
-            thread_ = threading.Thread(target=delay_func, args=(recv_data, flag))
-            thread_.start()
-            count += 1
-        else:
-            c.sendto(recv_data, (client_host, client_port))
-        
-        if flag == N:
-            print(f"delay rate = {count/N*100}%")
-            break
+    pick = random.random()
+    if pick <= 0.05:
+        print(f"*** Packet {flag:3d} Delayed ***")
+        thread_ = threading.Thread(target=delay_func, args=(recv_data, flag))
+        thread_.start()
+        count += 1
+    else:
+        c.sendto(recv_data, (client_host, client_port))
     
-    except socket.timeout:
-        print(f"*** Timeout while no input packet for {time_out_time} sec***")
+    if flag == N:
+        print(f"delay rate = {count/N*100}%")
         break
-    

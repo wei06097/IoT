@@ -1,15 +1,15 @@
-import socket
-import random
-import time
+import socket, random, os
+from dotenv import load_dotenv
 
-proxy_ip = "127.0.0.1"
-proxy_port = 5406
-host = "127.0.0.1"
-port = 5405
+load_dotenv()
+proxy_host = os.getenv("proxy_loss_host")
+proxy_port = int(os.getenv("proxy_loss_port"))
+client_host = os.getenv("client_host")
+client_port = int(os.getenv("client_port"))
 
 count = 0
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-c.bind((proxy_ip, proxy_port))
+c.bind((proxy_host, proxy_port))
 
 N = 100
 while True:
@@ -25,7 +25,7 @@ while True:
             print(f"*** Packet {format(flag,'3d')} Loss ***")
             count += 1
         else:
-            c.sendto(recv_data, (host, port))
+            c.sendto(recv_data, (client_host, client_port))
         
         if flag == N:
             print(f"loss rate = {count/N*100}%")

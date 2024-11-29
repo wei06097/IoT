@@ -1,11 +1,12 @@
-import socket
-import time
+import socket, time, os
+from dotenv import load_dotenv
 
-host = "127.0.0.1"
-port = 5405
+load_dotenv()
+client_host = os.getenv("client_host")
+client_port = int(os.getenv("client_port"))
 
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-c.bind((host, port))
+c.bind((client_host, client_port))
 
 time_out_time = 10
 c.settimeout(time_out_time)

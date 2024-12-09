@@ -2,8 +2,8 @@ import socket, time, os
 from dotenv import load_dotenv
 
 load_dotenv()
-client_host = os.getenv("client_host")
-client_port = int(os.getenv("client_port"))
+client_host = os.getenv("client_host1")
+client_port = int(os.getenv("client_port1"))
 
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 c.bind((client_host, client_port))

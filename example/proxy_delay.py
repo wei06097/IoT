@@ -5,8 +5,8 @@ load_dotenv()
 N = int(os.getenv("N"))
 proxy_host = os.getenv("proxy_delay_host")
 proxy_port = int(os.getenv("proxy_delay_port"))
-client_host = os.getenv("client_host")
-client_port = int(os.getenv("client_port"))
+client_host = os.getenv("client_host1")
+client_port = int(os.getenv("client_port1"))
 
 count = 0
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

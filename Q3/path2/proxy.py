@@ -14,6 +14,7 @@ print("UDP Proxy with port 5408")
 threads = []
 def delay_func(recv_data, _):
     time.sleep(0.5)
+    c.sendto(recv_data, (client_host, client_port))
     tr = time.time()
     message_from_send = recv_data.decode("utf-8")
     message, ts, t0 = message_from_send.split('/')

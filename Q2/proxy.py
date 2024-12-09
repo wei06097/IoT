@@ -18,5 +18,6 @@ while True:
 
     message_from_send = recv_data.decode("utf-8")
     message, ts, t0 = message_from_send.split('/')
-    print(f"[{message}] UDP Proxy received at t={float(tr)-float(t0):.3f} (delay={float(tr)-float(ts):.3f})")
+    print(f"[{message}] UDP Proxy received")
+    # print(f"[{message}] UDP Proxy received at t={float(tr)-float(t0):.3f} (delay={float(tr)-float(ts):.3f})")
     

@@ -12,14 +12,14 @@ c.bind((proxy_host, proxy_port))
 print("UDP Proxy with port 5408")
 
 threads = []
-def delay_func(recv_data, _):
+def delay_func(recv_data, tr):
     time.sleep(0.5)
     c.sendto(recv_data, (client_host, client_port))
-    tr = time.time()
+    tr2 = time.time()
     message_from_send = recv_data.decode("utf-8")
     message, ts, t0 = message_from_send.split('/')
     # print(f"[{message}] UDP Proxy received *** Released ***")
-    print(f"[{message}] UDP Proxy received at t={float(tr)-float(t0):.3f} (delay={float(tr)-float(ts):.3f}) *** Released ***")
+    print(f"[{message}] UDP Proxy received at t={float(tr)-float(t0):.3f} (delay={float(tr2)-float(ts):.3f}) *** Released ***")
 
 N = 10
 i = 0

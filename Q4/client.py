@@ -31,6 +31,7 @@ if __name__ == "__main__":
     t0 = 0
     tn = 0
     count = 0
+    retry_count = 0
     rs_data = []
     buffer = deque()
     while True:
@@ -41,47 +42,69 @@ if __name__ == "__main__":
         recv_data = json.loads(recv_data)
         buffer.append(recv_data)
         nth = recv_data['nth-package']
-        if t0 == 0:
-            t0 = time.time()
-        tn = time.time()
-        print(f"[Packet {nth:{int(math.log10(N))+1}d}] UDP Client received")
-        
-        signal = len(buffer) >= (1-E)*batch
-        # if len(buffer) == batch or (signal and N-count == batch):
-        if len(buffer) == batch or signal:
-            if signal:
-                s.sendto(f'{count+batch}'.encode('utf-8'), (server_host, server_port))
-            
-            for i in range(batch):
-                if not len(buffer) == 0:
+
+        if not nth == -1:
+            if t0 == 0:
+                t0 = time.time()
+            tn = time.time()
+            td = str(timedelta(seconds=tn-t0)).split('.')[0]
+            print(f"{td} [Packet {nth:{int(math.log10(N))+1}d}] UDP Client received")
+
+            signal = len(buffer) >= (1-E)*batch
+            if len(buffer) == batch or signal:
+                if signal:
+                        payload = {
+                            "topic": "signal",
+                            "count": count+batch
+                        }
+                        payload = json.dumps(payload).encode('utf-8')
+                        s.sendto(payload, (server_host, server_port))
+                
+                for i in range(batch):
+                    if not len(buffer) == 0:
+                        packet = buffer.popleft()
+                        nth = packet['nth-package']
+                    count += 1
+                    if count == nth:
+                        rs_data += packet['data']
+                    else:
+                        buffer.appendleft(packet)
+                        for _ in range(get_part_size(nsize, batch, i)):
+                            rs_data += b" "
+                
+                while not len(buffer) == 0:
                     packet = buffer.popleft()
                     nth = packet['nth-package']
-                count += 1
-                if count == nth:
-                    rs_data += packet['data']
-                else:
-                    buffer.appendleft(packet)
-                    for _ in range(get_part_size(nsize, batch, i)):
-                        rs_data += b" "
-            
-            while not len(buffer) == 0:
-                packet = buffer.popleft()
-                nth = packet['nth-package']
-                if nth > count:
-                    buffer.appendleft(packet)
-                    break
-            
-            res = rs.decode(rs_data)
-            origin_data = ''.join(chr(i) for i in res[0])
-            rs_data = []
+                    if nth > count:
+                        buffer.appendleft(packet)
+                        break
+                
+                try:
+                    res = rs.decode(rs_data)
+                    origin_data = ''.join(chr(i) for i in res[0])
+                    rs_data = []
+
+                    ### Write File
+                    with open(filename, "a") as file:
+                        origin_data = origin_data.replace("\n", f"\t{tn}\n")
+                        file.write(origin_data)
+
+                except Exception:
+                    retry_count += 1
+                    count -= batch
+                    print("error")
+                    payload = {
+                        "topic": "resend",
+                        "count": count
+                    }
+                    payload = json.dumps(payload).encode('utf-8')
+                    s.sendto(payload, (server_host, server_port))
+                    rs_data = []
+                    buffer.clear()
         
-            ### Write File
-            with open(filename, "a") as file:
-                origin_data = origin_data.replace("\n", f"\t{tn}\n")
-                file.write(origin_data)
-        
-        if count == N:
+        else:
             td = str(timedelta(seconds=tn-t0)).split('.')[0]
             print(f"total time: {td}")
+            print(f"retry: {retry_count}")
             break
         

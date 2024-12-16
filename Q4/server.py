@@ -16,17 +16,25 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((server_host, server_port))
 
 lock = threading.Lock()
-signal = -1
+topic = 0
+count = 0
 def listen_for_packets():
-    global signal
+    global topic
+    global count
     while True:
         data, addr = s.recvfrom(65535)
-        count = int(data.decode("utf-8"))
+        payload = data.decode("utf-8")
+        payload = json.loads(payload)
+        print(payload)
         with lock:
-            signal = count
-        if count == N:
-            break
-        
+            count = payload["count"]
+            if payload["topic"] == "signal":
+                topic = -1
+                if count == N:
+                    break
+            else:
+                topic = -2
+
 if __name__ == '__main__':
     thread = threading.Thread(target=listen_for_packets)
     thread.start()
@@ -38,8 +46,8 @@ if __name__ == '__main__':
     rs = RSCodec(nsym=nsym, nsize=nsize)
     print('Server Ready')
     
-    for batch_i in range(int(N / batch)):
-        
+    batch_i = 0
+    while batch_i < int(N / batch):
         ### Original Packet Data
         data = []
         origin_data = b""
@@ -67,10 +75,19 @@ if __name__ == '__main__':
             print(f"[Packet {nth:{int(math.log10(N))+1}d}] UDP Server sends")
             time.sleep(interval)
             with lock:
-                if signal > nth:
-                    signal = -1
+                if topic == -1:
+                    if count > nth:
+                        topic = 0
+                        count = 0
+                        break
+                elif topic == -2:
+                    batch_i = int(count / batch) - 1
+                    topic = 0
+                    count = 0
                     break
-    
+        
+        batch_i += 1
+                
     thread.join()
     packet = json.dumps({"nth-package": -1})
     packet = packet.encode('utf-8')

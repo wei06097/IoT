@@ -32,6 +32,7 @@ if __name__ == '__main__':
                 # print(f"[Packet {nth:{int(math.log10(N))+1}d}] UDP Proxy received")
                 s.sendto(recv_data, (client_host, client_port))
         else:
+            s.sendto(recv_data, (client_host, client_port))
             print(f"loss:{count}, total: {total}, rate:{round(count/total*100, 3)}%")
             break
         

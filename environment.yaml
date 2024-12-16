@@ -20,3 +20,4 @@ dependencies:
   - zlib=1.2.13=h8cc25b3_1
   - pip:
       - python-dotenv==1.0.1
+      - reedsolo==1.7.0

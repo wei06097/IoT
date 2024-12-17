@@ -2,12 +2,12 @@ import socket, time, os
 from dotenv import load_dotenv
 
 load_dotenv()
-client_host = os.getenv("client_host1")
-client_port = int(os.getenv("client_port1"))
+client_host = os.getenv("client_host")
+client_port = int(os.getenv("client_port"))
 
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 c.bind((client_host, client_port))
-print("UDP Client with port 5405")
+print("UDP Client Ready")
 
 while True:
     recv_data, server_address = c.recvfrom(65535)
